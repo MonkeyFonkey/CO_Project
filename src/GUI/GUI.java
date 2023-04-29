@@ -1,12 +1,14 @@
 package GUI;
 
 
+import Benchmark.CpuInfo;
 import Benchmark.PICalculatorNewtonRaphson;
 import Timing.Timing;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.DecimalFormat;
 
 import static Logging.TimeUnit.*;
 
@@ -15,6 +17,8 @@ public class GUI extends JFrame implements ActionListener {
     private JTextField digitsTextField;
     private JButton calculateButton;
     private JTextArea outputTextArea;
+    private JButton showPCConfigurationButton;
+    private JLabel cpuUsageLabel;
 
     public GUI() {
         super("Pi Calculator");
@@ -27,8 +31,21 @@ public class GUI extends JFrame implements ActionListener {
         digitsTextField.addActionListener(this);
         digitsTextField.setActionCommand("calculate");
 
-//        outputTextArea = new JTextArea(10, 30);
-//        outputTextArea.setEditable(false);
+
+        showPCConfigurationButton = new JButton("Show CPU Configuration");
+        showPCConfigurationButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Get CPU information and display in a message dialog
+                String cpuInfo = getCPUInformation();
+                JOptionPane.showMessageDialog(null, cpuInfo, "CPU Information", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+
+        //adding a cpu usage label
+        cpuUsageLabel = new JLabel("CPU Usage: ");
+        JPanel cpuPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        cpuPanel.add(cpuUsageLabel);
 
         // Add components to content pane
         JPanel panel = new JPanel(new GridBagLayout());
@@ -49,13 +66,47 @@ public class GUI extends JFrame implements ActionListener {
         constraints.gridy = 2;
         constraints.gridwidth = 2;
         panel.add(new JScrollPane(outputTextArea), constraints);
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.gridwidth = 2;
+        panel.add(showPCConfigurationButton, constraints);
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        panel.add(cpuUsageLabel, constraints); // Add CPU usage label to the GUI
+
 
         getContentPane().add(panel);
 
         pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+
+        // Start a timer to update the CPU usage label every 1 second
+        Timer timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                double cpuUsage = getCpuUsage();
+                DecimalFormat df = new DecimalFormat("#.#");
+                cpuUsageLabel.setText("CPU Usage: " + df.format(cpuUsage) + "%");
+            }
+        });
+        timer.start();
     }
+
+    // Get CPU usage as a percentage
+    public double getCpuUsage() {
+        CpuInfo cpu = new CpuInfo();
+        return cpu.getCpuUsage() * 100;
+    }
+
+
+    //get CPU information function
+    public String getCPUInformation(){
+        CpuInfo cpu = new CpuInfo();
+        return "Your PC has: " + cpu.getCpuModel() + " with the architecture: " + cpu.getArchitecture()
+                + " and has " + cpu.getAvailableProcessors() + " numbers of processors";
+    }
+
 
     public void actionPerformed(ActionEvent e) {
         //if ("calculate".equals(e.getActionCommand())) {

@@ -12,14 +12,14 @@ public class Main {
 //        pi1.run();
 //        pi1.getResult();
 
-          new GUI();
+         new GUI();
 
-//        CpuInfo cpuInfo = new CpuInfo();
+       CpuInfo cpuInfo = new CpuInfo();
 
 //        System.out.println("CPU Architecture: " + cpuInfo.getArchitecture());
 //        System.out.println("Available Processors: " + cpuInfo.getAvailableProcessors());
 //        System.out.println("System Load Average: " + cpuInfo.getSystemLoadAverage());
 //        System.out.println("CPU Usage: " + cpuInfo.getCpuUsage() * 100 + "%");
-//        System.out.println("CPU model: " + cpuInfo.getCpuModel());
+       // System.out.println("CPU model: " + cpuInfo.getCpuModel());
     }
 }
