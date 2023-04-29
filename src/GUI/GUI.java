@@ -58,7 +58,7 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        if ("calculate".equals(e.getActionCommand())) {
+        //if ("calculate".equals(e.getActionCommand())) {
             // Get the number of digits to calculate
             int numDigits = 0;
             try {
@@ -121,7 +121,7 @@ public class GUI extends JFrame implements ActionListener {
             resultFrame.add(buttonPanel, BorderLayout.SOUTH);
 
             resultFrame.setVisible(true);
-        }
+      //  }
     }
 
 
