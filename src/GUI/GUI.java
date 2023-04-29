@@ -1,71 +1,5 @@
 package GUI;
 
-/*
-import Benchmark.PICalculatorNewtonRaphson;
-import Timing.Timing;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import static Logging.TimeUnit.Sec;
-import static Logging.TimeUnit.toTimeUnit;
-import static java.lang.System.exit;
-
-public class GUI implements ActionListener {
-
-    private int count = 0;
-    private JFrame frame;
-    private JPanel panel;
-    private JButton run_bench_button;
-    private JLabel label;
-
-    public GUI(){
-        frame = new JFrame();
-
-        run_bench_button = new JButton("Calculate PI using NewtonRaphson");
-        run_bench_button.addActionListener(this);
-
-        panel = new JPanel();
-
-        label = new JLabel("Output: ");
-
-        panel.setBorder(BorderFactory.createEmptyBorder(30,30,10,30));
-        panel.setLayout(new GridLayout(0, 1));
-        panel.add(run_bench_button);
-        panel.add(label);
-
-
-
-        frame.add(panel, BorderLayout.CENTER);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle("Benchmark");
-        frame.pack();
-        frame.setVisible(true);
-
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        count++;
-        if(count == 1){
-            Timing clock = new Timing();
-            PICalculatorNewtonRaphson pi1 = new PICalculatorNewtonRaphson();
-            pi1.initialize(100);
-            clock.start();
-
-            pi1.run();
-
-            long time = clock.stop();
-
-            label.setText("Output: " + pi1.getResult() + "\n it took " + toTimeUnit(time, Sec));
-        }
-        else if(count == 2){
-            exit(1);
-        }
-    }
-}
-*/
 
 import Benchmark.PICalculatorNewtonRaphson;
 import Timing.Timing;
@@ -90,6 +24,9 @@ public class GUI extends JFrame implements ActionListener {
         digitsTextField = new JTextField(10);
         calculateButton = new JButton("Calculate");
         calculateButton.addActionListener(this);
+        digitsTextField.addActionListener(this);
+        digitsTextField.setActionCommand("calculate");
+
 //        outputTextArea = new JTextArea(10, 30);
 //        outputTextArea.setEditable(false);
 
@@ -121,49 +58,70 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        // Get the number of digits to calculate
-        int numDigits = Integer.parseInt(digitsTextField.getText());
-
-        Timing t = new Timing();
-        PICalculatorNewtonRaphson pi = new PICalculatorNewtonRaphson();
-        pi.initialize(numDigits);
-
-
-        // Calculate PI using the Newton-Raphson formula
-
-        t.start();
-        pi.run();
-        long totalTime = t.stop();
-
-        //Display the result and the time it took in a new JFrame
-
-        JFrame resultFrame = new JFrame("Result");
-        resultFrame.setSize(400, 300);
-        JTextArea resultTextArea = new JTextArea(10, 30);
-        resultTextArea.setEditable(false);
-        resultTextArea.append(String.format("Pi number with " + numDigits + "digits is: " + pi.getResult() + "\n"));
-        resultTextArea.append(String.format("Time taken: " + toTimeUnit(totalTime, Milli) + " milliseconds\n"));
-
-        //Adding the resultTextArea to the new frame
-        resultFrame.add(new JScrollPane(resultTextArea));
-        resultFrame.setVisible(true);
-
-        //Adding a back button to the result frame
-
-        JButton backButton = new JButton("Back");
-
-        //creating the function for the backButton
-        backButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                resultFrame.dispose();
+        if ("calculate".equals(e.getActionCommand())) {
+            // Get the number of digits to calculate
+            int numDigits = 0;
+            try {
+                numDigits = Integer.parseInt(digitsTextField.getText());
+            } catch (NumberFormatException ex) {
+                // Display an error message and highlight the text field in red
+                JOptionPane.showMessageDialog(this, "Please enter a valid integer", "Error", JOptionPane.ERROR_MESSAGE);
+                digitsTextField.setBorder(BorderFactory.createLineBorder(Color.RED));
+                return;
             }
-        });
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(backButton);
-        resultFrame.add(buttonPanel, BorderLayout.SOUTH);
+            // Reset the background color of the text field
+            digitsTextField.setBorder(BorderFactory.createLineBorder(Color.black));
 
-        resultFrame.setVisible(true);
+            Timing t = new Timing();
+            PICalculatorNewtonRaphson pi = new PICalculatorNewtonRaphson();
+            pi.initialize(numDigits);
+
+
+            // Calculate PI using the Newton-Raphson formula
+
+            t.start();
+            pi.run();
+            long totalTime = t.stop();
+
+            //Display the result and the time it took in a new JFrame
+
+            JFrame resultFrame = new JFrame("Result");
+            resultFrame.setSize(700, 450);
+            JTextArea resultTextArea = new JTextArea(10, 30);
+            resultTextArea.setEditable(false);
+            resultTextArea.append(String.format("Pi number with %d digits is:\n", numDigits));
+            String piResult = pi.getResult();
+            int lineLength = 80;
+            for (int i = 0; i < piResult.length(); i += lineLength) {
+                int endIndex = Math.min(i + lineLength, piResult.length());
+                resultTextArea.append(String.format("%s\n", piResult.substring(i, endIndex)));
+            }
+            resultTextArea.append(String.format("Time taken: %s milliseconds\n", toTimeUnit(totalTime, Milli)));
+
+            //resultTextArea.append(String.format("Time taken: " + toTimeUnit(totalTime, Milli) + " milliseconds\n"));
+
+            //Adding the resultTextArea to the new frame
+            resultFrame.add(new JScrollPane(resultTextArea));
+            resultFrame.setVisible(true);
+
+            //Adding a back button to the result frame
+
+            JButton backButton = new JButton("Back");
+
+            //creating the function for the backButton
+            backButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    resultFrame.dispose();
+                }
+            });
+
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            buttonPanel.add(backButton);
+            resultFrame.add(buttonPanel, BorderLayout.SOUTH);
+
+            resultFrame.setVisible(true);
+        }
     }
 
 
