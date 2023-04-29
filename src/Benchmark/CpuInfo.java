@@ -10,7 +10,15 @@ public class CpuInfo {
     private OperatingSystemMXBean osBean;
 
     public CpuInfo() {
-        osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+        for (com.sun.management.OperatingSystemMXBean bean : ManagementFactory.getPlatformMXBeans(com.sun.management.OperatingSystemMXBean.class)) {
+            if (bean instanceof com.sun.management.OperatingSystemMXBean) {
+                osBean = bean;
+                break;
+            }
+        }
+        if (osBean == null) {
+            throw new RuntimeException("Could not find an instance of OperatingSystemMXBean");
+        }
     }
 
     public String getArchitecture() {
@@ -37,7 +45,10 @@ public class CpuInfo {
                 try {
                     Process process = Runtime.getRuntime().exec("wmic cpu get name");
                     Scanner scanner = new Scanner(process.getInputStream());
-                    scanner.skip(".*\n"); // skip the first line (header)
+                    if (scanner.hasNextLine()) {
+                        scanner.nextLine(); // skip the first line (header)
+                    }
+ //                 scanner.skip(".*\n"); // skip the first line (header)
                     String cpuModel = scanner.nextLine();
                     scanner.close();
                     return cpuModel.trim();
