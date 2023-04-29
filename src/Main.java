@@ -20,5 +20,6 @@ public class Main {
         System.out.println("Available Processors: " + cpuInfo.getAvailableProcessors());
         System.out.println("System Load Average: " + cpuInfo.getSystemLoadAverage());
         System.out.println("CPU Usage: " + cpuInfo.getCpuUsage() * 100 + "%");
+        System.out.println("CPU model: " + cpuInfo.getCpuModel());
     }
 }
