@@ -105,7 +105,7 @@ public class GUI extends JFrame implements ActionListener {
 
                 score = (long)(((pi.getNumDigits()/ toTimeUnit(totalTime, Sec)) * 1000)/numCores);
 
-                String scoreRecord = pcID + "," + cpuModel + ", with score: " + score;
+                String scoreRecord = pcID + "," + cpuModel + "," + score;
 
 
                 //Checking if there is a unique pcID

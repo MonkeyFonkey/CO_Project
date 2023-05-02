@@ -1,1 +1,3 @@
--andreisebastian,Apple M1, with score: 231130
+address,cpu,score
+-andreisebastian,Apple M1,231130
+D85ED35CB56F-andre,11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz,442957
