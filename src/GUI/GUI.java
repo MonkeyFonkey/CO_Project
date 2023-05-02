@@ -50,32 +50,47 @@ public class GUI extends JFrame implements ActionListener {
         // Add components to content pane
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
+
+        //Adding digitsLabel
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.anchor = GridBagConstraints.WEST;
         constraints.insets = new Insets(5, 5, 5, 5);
         panel.add(digitsLabel, constraints);
+
+        //Adding digitsTextField
         constraints.gridx = 1;
         panel.add(digitsTextField, constraints);
+
+        //Adding calculate button
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.CENTER;
         panel.add(calculateButton, constraints);
+
+        //adding outputTextArea
         constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.gridwidth = 2;
         panel.add(new JScrollPane(outputTextArea), constraints);
+
+        //Adding show PC configuration Button
         constraints.gridx = 0;
         constraints.gridy = 3;
         constraints.gridwidth = 2;
         panel.add(showPCConfigurationButton, constraints);
+
+        //added CPU USAGE LABEL
         constraints.gridx = 0;
         constraints.gridy = 4;
         panel.add(cpuUsageLabel, constraints); // Add CPU usage label to the GUI
 
 
         getContentPane().add(panel);
+
+        //Center the panel in the middle of the screen
+        setLocationRelativeTo(null);
 
         pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
