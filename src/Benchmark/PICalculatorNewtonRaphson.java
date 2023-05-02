@@ -40,7 +40,9 @@ public class PICalculatorNewtonRaphson implements iBenchmark{
         return pi;
     }
 
-
+    public int getNumDigits() {
+        return numDigits;
+    }
 
     private BigDecimal sqrt(BigDecimal num, int numDigits) {
         // calculate square root using BigDecimal class
