@@ -6,21 +6,6 @@ import Benchmark.CpuInfo;
 
 public class Main {
     public static void main(String[] args) {
-//        Timing clock = new Timing();
-//        PICalculatorNewtonRaphson pi1 = new PICalculatorNewtonRaphson();
-//        pi1.initialize(100);
-//        pi1.run();
-//        pi1.getResult();
-
          new GUI();
-//
-//    CpuInfo cpu = new CpuInfo();
-//    System.out.println(cpu.getCpuModel());
-
-//        System.out.println("CPU Architecture: " + cpuInfo.getArchitecture());
-//        System.out.println("Available Processors: " + cpuInfo.getAvailableProcessors());
-//        System.out.println("System Load Average: " + cpuInfo.getSystemLoadAverage());
-//        System.out.println("CPU Usage: " + cpuInfo.getCpuUsage() * 100 + "%");
-       // System.out.println("CPU model: " + cpuInfo.getCpuModel());
     }
 }
