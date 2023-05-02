@@ -72,9 +72,11 @@ public class GUI extends JFrame implements ActionListener {
                     return;
                 }
 
-                pcID = getPCID().replace("-andre", "");
-
-                System.out.println(pcID);
+//                System.out.println(pcID);
+//
+//                pcID = getPCID().replace("-andre", "");
+//
+//                System.out.println(pcID);
 
                 //Checking if CPU model could be retrived
                 String cpuModel;

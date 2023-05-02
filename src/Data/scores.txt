@@ -1,1 +1,1 @@
-D85ED35CB56F,11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz, with score: 447839
+-andreisebastian,Apple M1, with score: 231130
