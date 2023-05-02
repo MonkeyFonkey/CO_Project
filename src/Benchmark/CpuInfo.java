@@ -1,6 +1,8 @@
 package Benchmark;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.util.Scanner;
 
@@ -40,22 +42,24 @@ public class CpuInfo {
     public String getCpuModel() {
             String osName = System.getProperty("os.name").toLowerCase();
             String arch = System.getProperty("os.arch").toLowerCase();
+            String cpuModelWindows = "Unknown";
 
-            if (osName.contains("win")) { // Windows
-                try {
-                    Process process = Runtime.getRuntime().exec("wmic cpu get name");
-                    Scanner scanner = new Scanner(process.getInputStream());
-                    if (scanner.hasNextLine()) {
-                        scanner.nextLine(); // skip the first line (header)
+        if (osName.contains("win")) { // Windows
+            try {
+                Process process = Runtime.getRuntime().exec("wmic cpu get name");
+                Scanner scanner = new Scanner(process.getInputStream());
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine().trim();
+                    if (!line.isEmpty() && !line.equalsIgnoreCase("name")) {
+                        cpuModelWindows = line;
+                        break;
                     }
- //                 scanner.skip(".*\n"); // skip the first line (header)
-                    String cpuModel = scanner.nextLine();
-                    scanner.close();
-                    return cpuModel.trim();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return "Unknown";
                 }
+                scanner.close();
+                return  cpuModelWindows.trim();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             } else if (osName.contains("mac")) { // macOS
                 try {
                     Process process = Runtime.getRuntime().exec("sysctl -n machdep.cpu.brand_string");
@@ -81,6 +85,8 @@ public class CpuInfo {
             } else { // Unsupported OS
                 return "Unknown";
             }
+
+        return "Unknown";
     }
 
 

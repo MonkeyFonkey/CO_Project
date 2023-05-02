@@ -13,8 +13,9 @@ public class Main {
 //        pi1.getResult();
 
          new GUI();
-
-       CpuInfo cpuInfo = new CpuInfo();
+//
+//    CpuInfo cpu = new CpuInfo();
+//    System.out.println(cpu.getCpuModel());
 
 //        System.out.println("CPU Architecture: " + cpuInfo.getArchitecture());
 //        System.out.println("Available Processors: " + cpuInfo.getAvailableProcessors());
