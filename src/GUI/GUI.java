@@ -2,6 +2,7 @@ package GUI;
 
 
 import Benchmark.CpuInfo;
+import java.text.NumberFormat;
 import Benchmark.PICalculatorNewtonRaphson;
 import Timing.Timing;
 import com.sun.management.OperatingSystemMXBean;
@@ -31,7 +32,7 @@ public class GUI extends JFrame implements ActionListener {
 
     private static final String SCORE_FILE = "scores.txt";
 
-    private long score = 0;
+    private double score = 0;
 
     private OperatingSystemMXBean osBean; // for the number of cores
 
@@ -98,18 +99,15 @@ public class GUI extends JFrame implements ActionListener {
                 pi.run();
                 long totalTime = t.stop();
 
-
-
                 //Calculating the score:
                 int numCores = Runtime.getRuntime().availableProcessors();
 
-                score = (long)(((pi.getNumDigits()/ toTimeUnit(totalTime, Sec)) * 1000)/numCores);
+                score = Math.round(((pi.getNumDigits()/ toTimeUnit(totalTime, Sec))/numCores)) / 10;
 
                 String scoreRecord = pcID + "," + cpuModel + "," + score;
 
 
                 //Checking if there is a unique pcID
-
                 try {
                     if (!isPCIDUnique(pcID)) {
                         JOptionPane.showMessageDialog(null, "Error: Unique PCID already exists in score file");
@@ -289,7 +287,7 @@ public class GUI extends JFrame implements ActionListener {
 
             //Calculating the score:
             int numCores = Runtime.getRuntime().availableProcessors();
-            score = (long)(((pi.getNumDigits()/secondsTotalTime) * 10)/numCores) ;//number of digits over the time it took to run the program multipled by 1000 then divided by
+            score = Math.round((((pi.getNumDigits()/secondsTotalTime))/numCores)) / 10;//number of digits over the time it took to run the program multipled by 1000 then divided by
                                                                                             //the number of cores!
 
 
@@ -310,7 +308,12 @@ public class GUI extends JFrame implements ActionListener {
                 resultTextArea.append(String.format("%s\n", piResult.substring(i, endIndex)));
             }
             resultTextArea.append(String.format("Time taken: %s milliseconds\n", toTimeUnit(totalTime, Milli)));
-            resultTextArea.append(String.format("The score is: %d\n\n", score));
+
+            resultTextArea.append(String.format("Score: %s/200\n\n", score));
+
+
+
+            //resultTextArea.append(String.format("Score: %.2f%%\n\n", (double) score));
 
 
             //Adding the resultTextArea to the new frame
