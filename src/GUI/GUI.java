@@ -1,10 +1,10 @@
 package GUI;
 
-
+import Benchmark.Ram.MemoryBandwidthBenchamrk;
 import Benchmark.CpuInfo;
 import Benchmark.PICalculatorNewtonRaphson;
 import Timing.Timing;
-import com.sun.management.OperatingSystemMXBean;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -28,12 +28,15 @@ public class GUI extends JFrame implements ActionListener {
     private JButton showPCConfigurationButton;
     private JButton average_score_to_document_button;
     private JLabel cpuUsageLabel;
+    private JLabel digitsForCalculateRamLabel;
+    private JTextField digitsForCalculateRamTextField;
+    private JButton calculateRamButton;
 
     private static final String SCORE_FILE = "scores.txt";
 
     private long score = 0;
 
-    private OperatingSystemMXBean osBean; // for the number of cores
+    //private OperatingSystemMXBean osBean; // for the number of cores
 
     public GUI() {
         super("Pi Calculator");
@@ -46,6 +49,72 @@ public class GUI extends JFrame implements ActionListener {
         digitsTextField.addActionListener(this);
         digitsTextField.setActionCommand("calculate");
 
+        digitsForCalculateRamLabel =  new JLabel("Length for RAM bench: ");
+        digitsForCalculateRamTextField = new JTextField(10);
+        calculateRamButton = new JButton("Calculate");
+        calculateRamButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MemoryBandwidthBenchamrk mem1 = new MemoryBandwidthBenchamrk();
+                String input = digitsForCalculateRamTextField.getText();
+                int arraySize = 0;
+
+                try {
+                    arraySize = Integer.parseInt(digitsForCalculateRamTextField.getText());
+                } catch (NumberFormatException ex) {
+                    // Display an error message and highlight the text field in red
+                    JOptionPane.showMessageDialog(null, "Please enter a valid integer", "Error", JOptionPane.ERROR_MESSAGE);
+                    digitsForCalculateRamTextField.setBorder(BorderFactory.createLineBorder(Color.RED));
+                    return;
+                }
+
+                // Reset the background color of the text field
+                digitsForCalculateRamTextField.setBorder(BorderFactory.createLineBorder(Color.black));
+
+                // Call the initialize function with the arraySize
+
+                Timing t = new Timing();
+                t.start();
+                mem1.run();
+                long totalTime = t.stop();
+
+
+
+                double SecTime = toTimeUnit(totalTime, Sec);
+
+                // Display the result and the time in a new JFrame
+                JFrame resultFrame = new JFrame("Result");
+                resultFrame.setSize(700, 450);
+
+                JTextArea resultTextArea = new JTextArea(10, 30);
+                resultTextArea.setEditable(false);
+                resultTextArea.append("Time taken: " + SecTime + " seconds\n");
+                resultTextArea.append("Score: " + mem1.getScore() + "\n");
+
+                JScrollPane scrollPane = new JScrollPane(resultTextArea);
+
+                JButton backButton = new JButton("Back");
+                backButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        resultFrame.dispose();
+                    }
+                });
+
+                JPanel buttonPanel = new JPanel();
+                buttonPanel.add(backButton);
+
+                JPanel resultPanel = new JPanel();
+                resultPanel.setLayout(new BorderLayout());
+                resultPanel.add(scrollPane, BorderLayout.CENTER);
+                resultPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+                resultFrame.add(resultPanel);
+                resultFrame.setVisible(true);
+            }
+
+        });
+
 
         showPCConfigurationButton = new JButton("Show CPU Configuration");
         showPCConfigurationButton.addActionListener(new ActionListener() {
@@ -56,7 +125,7 @@ public class GUI extends JFrame implements ActionListener {
             }
         });
 
-        average_score_to_document_button = new JButton("Add Average Score to Document!");
+        average_score_to_document_button = new JButton("Add Average CPU Score to Document");
         average_score_to_document_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -72,11 +141,6 @@ public class GUI extends JFrame implements ActionListener {
                     return;
                 }
 
-//                System.out.println(pcID);
-//
-//                pcID = getPCID().replace("-andre", "");
-//
-//                System.out.println(pcID);
 
                 //Checking if CPU model could be retrived
                 String cpuModel;
@@ -103,13 +167,12 @@ public class GUI extends JFrame implements ActionListener {
                 //Calculating the score:
                 int numCores = Runtime.getRuntime().availableProcessors();
 
-                score = (long)(((pi.getNumDigits()/ toTimeUnit(totalTime, Sec)) * 1000)/numCores);
+                score = (long)(((pi.getNumDigits()/ toTimeUnit(totalTime, Sec)) * 10)/numCores);
 
                 String scoreRecord = pcID + "," + cpuModel + "," + score;
 
 
                 //Checking if there is a unique pcID
-
                 try {
                     if (!isPCIDUnique(pcID)) {
                         JOptionPane.showMessageDialog(null, "Error: Unique PCID already exists in score file");
@@ -143,6 +206,7 @@ public class GUI extends JFrame implements ActionListener {
         // Add components to content pane
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
+  
 
         //Adding digitsLabel
         constraints.gridx = 0;
@@ -195,6 +259,20 @@ public class GUI extends JFrame implements ActionListener {
         constraints.gridy = 6;
         constraints.gridwidth = 2;
         panel.add(average_score_to_document_button, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 8;
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.insets = new Insets(5, 5, 5, 5);
+        panel.add(digitsForCalculateRamLabel, constraints);
+
+        constraints.gridx = 1;
+        panel.add(digitsForCalculateRamTextField, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 9;
+        constraints.gridwidth = 2;
+        panel.add(calculateRamButton, constraints);
 
         digitsForAvgScoreTextField = new JTextField("1000", 10);
 
