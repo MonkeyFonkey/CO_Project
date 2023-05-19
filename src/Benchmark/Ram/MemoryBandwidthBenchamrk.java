@@ -10,7 +10,7 @@ public class MemoryBandwidthBenchamrk implements iBenchmark {
     @Override
     public void run() {
         long transferRate = measureMemoryBandwidth();
-         score = calculateScore(transferRate);
+        score = calculateScore(transferRate);
     }
 
 
@@ -20,30 +20,7 @@ public class MemoryBandwidthBenchamrk implements iBenchmark {
 
     private static double calculateScore(long transferRate) {
         double score;
-
-        if (transferRate < 100000000) {
-            score = 1.0;
-        } else if (transferRate < 200000000) {
-            score = 2.0;
-        } else if (transferRate < 300000000) {
-            score = 3.0;
-        } else if (transferRate < 400000000) {
-            score = 4.0;
-        } else if (transferRate < 500000000) {
-            score = 5.0;
-        } else if (transferRate < 600000000) {
-            score = 6.0;
-        } else if (transferRate < 700000000) {
-            score = 7.0;
-        } else if (transferRate < 800000000) {
-            score = 8.0;
-        } else if (transferRate < 900000000) {
-            score = 9.0;
-        } else {
-            score = 10.0;
-        }
-
-
+        score = transferRate/100000000;
         return score;
     }
     @Override

@@ -111,7 +111,7 @@ public class GUI extends JFrame implements ActionListener {
                 //Calculating the score:
                 int numCores = Runtime.getRuntime().availableProcessors();
 
-                score = (long)(((pi.getNumDigits()/ toTimeUnit(totalTime, Sec)) * 10)/numCores);
+                score = (long)(((pi.getNumDigits()/ toTimeUnit(totalTime, Sec)))/numCores);
 
                 String scoreRecord = pcID + "," + cpuModel + "," + score;
 
@@ -191,32 +191,6 @@ public class GUI extends JFrame implements ActionListener {
         // Add components to content pane
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
-
-
-
-        //PANELS FOR: CPU BENCHMARK, RAM, PC INFORMATION
-
-        JPanel goToCPUBenchPanel = new JPanel(new GridBagLayout());
-        JButton goToCPUButton = new JButton("CPU BENCHMARK");
-
-        goToCPUButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                // Remove the additionalPanel if it already exists
-                if (goToCPUBenchPanel != null) {
-                    panel.remove(goToCPUBenchPanel);
-                }
-
-                // Add the additionalPanel to the panel
-                panel.add(goToCPUBenchPanel, constraints);
-
-                // Revalidate and repaint the main frame to update the layout
-                revalidate();
-                repaint();
-
-            }
-        });
 
 
 
@@ -344,12 +318,24 @@ public class GUI extends JFrame implements ActionListener {
         int numDigits = 0;
         try {
             numDigits = Integer.parseInt(digitsTextField.getText());
+
+
         } catch (NumberFormatException ex) {
             // Display an error message and highlight the text field in red
             JOptionPane.showMessageDialog(this, "Please enter a valid integer", "Error", JOptionPane.ERROR_MESSAGE);
             digitsTextField.setBorder(BorderFactory.createLineBorder(Color.RED));
             return;
         }
+
+
+        // Check if numDigits is 0
+        if (numDigits == 0) {
+            // Display an error message and highlight the text field in red
+            JOptionPane.showMessageDialog(this, "Number of digits cannot be 0", "Error", JOptionPane.ERROR_MESSAGE);
+            digitsTextField.setBorder(BorderFactory.createLineBorder(Color.RED));
+            return;
+        }
+
 
         // Reset the background color of the text field
         digitsTextField.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -370,7 +356,7 @@ public class GUI extends JFrame implements ActionListener {
 
         //Calculating the score:
         int numCores = Runtime.getRuntime().availableProcessors();
-        score = (long)(((pi.getNumDigits()/secondsTotalTime) * 10)/numCores) ;//number of digits over the time it took to run the program multipled by 1000 then divided by
+        score = (long)(((pi.getNumDigits()/secondsTotalTime))/numCores) ;//number of digits over the time it took to run the program multipled by 1000 then divided by
         //the number of cores!
 
 
