@@ -3,6 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/CO_PROJECT_jar</output-path>
     <root id="archive" name="CO_PROJECT.jar">
       <element id="module-output" name="CO_PROJECT" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/opencsv-5.7.1.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
