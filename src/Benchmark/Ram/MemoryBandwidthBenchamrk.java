@@ -1,6 +1,8 @@
 package Benchmark.Ram;
 import Benchmark.iBenchmark;
 
+import java.text.DecimalFormat;
+
 import static Benchmark.Ram.MemBandwidthImplementation.measureMemoryBandwidth;
 
 public class MemoryBandwidthBenchamrk implements iBenchmark {
@@ -13,6 +15,11 @@ public class MemoryBandwidthBenchamrk implements iBenchmark {
         score = calculateScore(transferRate);
     }
 
+    @Override
+    public void initialize(int param) {
+        //nothing
+    }
+
 
     public double getScore(){
         return score;
@@ -20,32 +27,12 @@ public class MemoryBandwidthBenchamrk implements iBenchmark {
 
     private static double calculateScore(long transferRate) {
         double score;
-        score = transferRate/100000000;
-        return score;
-    }
-    @Override
-    public void run(Object... params) {
+        score = (double) transferRate / 100000000;
 
-    }
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        String formattedScore = decimalFormat.format(score);
 
-    @Override
-    public void initialize(int param) {
-
-    }
-
-    @Override
-    public void clean() {
-
-    }
-
-    @Override
-    public void cancel() {
-
-    }
-
-    @Override
-    public void warmUp() {
-
+        return Double.parseDouble(formattedScore);
     }
 
     @Override

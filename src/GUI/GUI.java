@@ -14,23 +14,10 @@ import static Logging.TimeUnit.*;
 
 public class GUI extends JFrame implements ActionListener {
 
+    private final JTextField digitsTextField;
 
+    private final JLabel cpuUsageLabel;
 
-    private final JLabel digitsLabel;
-    private JTextField digitsForAvgScoreTextField;
-    private JLabel digitsForAvgScoreLabel;
-    private JTextField digitsTextField;
-
-    private JButton calculateButton;
-    private JTextArea outputTextArea;
-    private JButton showPCConfigurationButton;
-    private JButton average_score_to_document_button;
-    private JLabel cpuUsageLabel;
-    private JLabel digitsForCalculateRamLabel;
-
-    private JButton calculateRamButton;
-
-    private static final String SCORE_FILE = "scores.txt";
 
     private long score = 0;
 
@@ -39,151 +26,128 @@ public class GUI extends JFrame implements ActionListener {
         super("The Bit Busters");
 
 
-        digitsLabel = new JLabel("Digits of PI to calculate:");
+        JLabel digitsLabel = new JLabel("Digits of PI to calculate:");
         digitsTextField = new JTextField(10);
-        calculateButton = new JButton("Calculate");
+        JButton calculateButton = new JButton("Calculate");
         calculateButton.addActionListener(this);
         digitsTextField.addActionListener(this);
         digitsTextField.setActionCommand("calculate");
 
 
-
-        digitsForCalculateRamLabel =  new JLabel("RAM BENCHMARK by measuring the BANDWIDTH");
-
+        JLabel digitsForCalculateRamLabel = new JLabel("RAM BENCHMARK by measuring the BANDWIDTH");
 
 
-        calculateRamButton = new JButton("Calculate");
-        showPCConfigurationButton = new JButton("Show CPU Configuration");
-        average_score_to_document_button = new JButton("Add Average CPU Score to Document");
+        JButton calculateRamButton = new JButton("Calculate");
+        JButton showPCConfigurationButton = new JButton("Show CPU Configuration");
+        JButton average_score_to_document_button = new JButton("Add Average CPU Score to Document");
 
 
-        digitsForAvgScoreTextField = new JTextField(10);
-        digitsForAvgScoreLabel = new JLabel("Digits used for Average CPU Score to Document: 1000");
+        JLabel digitsForAvgScoreLabel = new JLabel("Digits used for Average CPU Score to Document: 1000");
 
 
-        showPCConfigurationButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Get CPU information and display in a message dialog
-                String cpuInfo = getCPUInformation();
-                JOptionPane.showMessageDialog(null, cpuInfo, "CPU Information", JOptionPane.INFORMATION_MESSAGE);
-            }
+        showPCConfigurationButton.addActionListener(e -> {
+            // Get CPU information and display in a message dialog
+            String cpuInfo = getCPUInformation();
+            JOptionPane.showMessageDialog(null, cpuInfo, "CPU Information", JOptionPane.INFORMATION_MESSAGE);
         });
 
 
-        average_score_to_document_button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CpuInfo cpu = new CpuInfo();
+        average_score_to_document_button.addActionListener(e -> {
+            CpuInfo cpu = new CpuInfo();
 
 
-                //Checking if pcID could be retrived
-                String pcID;
-                try {
-                    pcID = getPCID();
-                } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(null, "Error: Could not determine PC ID.");
-                    return;
-                }
-
-
-                //Checking if CPU model could be retrived
-                String cpuModel;
-                try {
-                    cpuModel = cpu.getCpuModel();
-                } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(null, "Error: Could not determine CPU model.");
-                    return;
-                }
-
-
-
-                Timing t = new Timing();
-                PICalculatorNewtonRaphson pi = new PICalculatorNewtonRaphson();
-                pi.initialize(1000);
-
-
-                t.start();
-                pi.run();
-                long totalTime = t.stop();
-
-
-
-                //Calculating the score:
-                int numCores = Runtime.getRuntime().availableProcessors();
-
-                score = (long)(((pi.getNumDigits()/ toTimeUnit(totalTime, Sec)))/numCores);
-
-                String scoreRecord = pcID + "," + cpuModel + "," + score;
-
-
-                //Checking if there is a unique pcID
-                try {
-                    if (!isPCIDUnique(pcID)) {
-                        JOptionPane.showMessageDialog(null, "Error: Unique PCID already exists in score file");
-                        return;
-                    }
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-
-
-                try {
-                    saveScoreToFile(scoreRecord);
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Could not save to score file");
-                    return;
-                }
-
-
+            //Checking if pcID could be retrieved
+            String pcID;
+            try {
+                pcID = getPCID();
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(null, "Error: Could not determine PC ID.");
+                return;
             }
+
+
+            //Checking if CPU model could be retrieved
+            String cpuModel;
+            try {
+                cpuModel = cpu.getCpuModel();
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(null, "Error: Could not determine CPU model.");
+                return;
+            }
+
+
+
+            Timing t = new Timing();
+            PICalculatorNewtonRaphson pi = new PICalculatorNewtonRaphson();
+            pi.initialize(1000);
+
+
+            t.start();
+            pi.run();
+            long totalTime = t.stop();
+
+
+
+            //Calculating the score:
+            int numCores = Runtime.getRuntime().availableProcessors();
+
+            score = (long)(((pi.getNumDigits()/ toTimeUnit(totalTime, Sec)))/numCores);
+
+            String scoreRecord = pcID + "," + cpuModel + "," + score;
+
+
+            //Checking if there is a unique pcID
+            try {
+                if (!isPCIDUnique(pcID)) {
+                    JOptionPane.showMessageDialog(null, "Error: Unique PC ID already exists in score file");
+                    return;
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+
+
+            try {
+                saveScoreToFile(scoreRecord);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Could not save to score file");
+            }
+
+
         });
 
 
-        calculateRamButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MemoryBandwidthBenchamrk mem1 = new MemoryBandwidthBenchamrk();
+        calculateRamButton.addActionListener(e -> {
+            MemoryBandwidthBenchamrk mem1 = new MemoryBandwidthBenchamrk();
 
-                // Call the initialize function with the arraySize
-                Timing t = new Timing();
-                t.start();
-                mem1.run();
-                long totalTime = t.stop();
+            // Call the initialize function with the arraySize
+            mem1.run();
 
 
 
-                double SecTime = toTimeUnit(totalTime, Sec);
+            // Display the result and the time in a new JFrame
+            JFrame resultFrame = new JFrame("Result");
+            resultFrame.setSize(400, 250);
 
-                // Display the result and the time in a new JFrame
-                JFrame resultFrame = new JFrame("Result");
-                resultFrame.setSize(400, 250);
+            JTextArea resultTextArea = new JTextArea(10, 30);
+            resultTextArea.setEditable(false);
+            resultTextArea.append("Score: " + mem1.getScore() + "\n");
 
-                JTextArea resultTextArea = new JTextArea(10, 30);
-                resultTextArea.setEditable(false);
-                resultTextArea.append("Score: " + mem1.getScore() + "\n");
+            JScrollPane scrollPane = new JScrollPane(resultTextArea);
 
-                JScrollPane scrollPane = new JScrollPane(resultTextArea);
+            JButton backButton = new JButton("Back");
+            backButton.addActionListener(e12 -> resultFrame.dispose());
 
-                JButton backButton = new JButton("Back");
-                backButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        resultFrame.dispose();
-                    }
-                });
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.add(backButton);
 
-                JPanel buttonPanel = new JPanel();
-                buttonPanel.add(backButton);
+            JPanel resultPanel = new JPanel();
+            resultPanel.setLayout(new BorderLayout());
+            resultPanel.add(scrollPane, BorderLayout.CENTER);
+            resultPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-                JPanel resultPanel = new JPanel();
-                resultPanel.setLayout(new BorderLayout());
-                resultPanel.add(scrollPane, BorderLayout.CENTER);
-                resultPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-                resultFrame.add(resultPanel);
-                resultFrame.setVisible(true);
-            }
-
+            resultFrame.add(resultPanel);
+            resultFrame.setVisible(true);
         });
 
 
@@ -218,11 +182,6 @@ public class GUI extends JFrame implements ActionListener {
         constraints.anchor = GridBagConstraints.CENTER;
         panel.add(calculateButton, constraints);
 
-        //adding outputTextArea for a new PANEL
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.gridwidth = 2;
-        panel.add(new JScrollPane(outputTextArea), constraints);
 
         //Adding show PC configuration Button
         constraints.gridx = 0;
@@ -264,7 +223,7 @@ public class GUI extends JFrame implements ActionListener {
         constraints.anchor = GridBagConstraints.CENTER;
         panel.add(calculateRamButton, constraints);
 
-        digitsForAvgScoreTextField = new JTextField("1000", 10);
+
 
 
         getContentPane().add(panel);
@@ -283,13 +242,10 @@ public class GUI extends JFrame implements ActionListener {
 
 
         // Start a timer to update the CPU usage label every 1 second
-        Timer timer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                double cpuUsage = getCpuUsage();
-                DecimalFormat df = new DecimalFormat("#.#");
-                cpuUsageLabel.setText("CPU Usage: " + df.format(cpuUsage) + "%");
-            }
+        Timer timer = new Timer(1000, e -> {
+            double cpuUsage = getCpuUsage();
+            DecimalFormat df = new DecimalFormat("#.#");
+            cpuUsageLabel.setText("CPU Usage: " + df.format(cpuUsage) + "%");
         });
         timer.start();
     }
@@ -315,7 +271,7 @@ public class GUI extends JFrame implements ActionListener {
     //action when pressing the "calculate" button
     public void actionPerformed(ActionEvent e) {
         // Get the number of digits to calculate
-        int numDigits = 0;
+        int numDigits;
         try {
             numDigits = Integer.parseInt(digitsTextField.getText());
 
@@ -346,7 +302,7 @@ public class GUI extends JFrame implements ActionListener {
 
 
 
-        // Calculate PI using the Newton-Raphson formula
+        /* Calculate PI using the Newton - Raphson formula */
 
         t.start();
         pi.run();
@@ -356,7 +312,7 @@ public class GUI extends JFrame implements ActionListener {
 
         //Calculating the score:
         int numCores = Runtime.getRuntime().availableProcessors();
-        score = (long)(((pi.getNumDigits()/secondsTotalTime))/numCores) ;//number of digits over the time it took to run the program multipled by 1000 then divided by
+        score = (long)(((pi.getNumDigits()/secondsTotalTime))/numCores) ;//number of digits over the time it took to run the program multiplied by 1000 then divided by
         //the number of cores!
 
 
@@ -389,11 +345,7 @@ public class GUI extends JFrame implements ActionListener {
         JButton backButton = new JButton("Back");
 
         //creating the function for the backButton
-        backButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                resultFrame.dispose();
-            }
-        });
+        backButton.addActionListener(e1 -> resultFrame.dispose());
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.add(backButton);

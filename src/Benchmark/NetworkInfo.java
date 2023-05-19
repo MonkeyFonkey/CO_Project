@@ -12,11 +12,11 @@ public class NetworkInfo {
             String userName = System.getProperty("user.name");
             StringBuilder sb = new StringBuilder();
             if (mac != null) {
-                for (int i = 0; i < mac.length; i++) {
-                    sb.append(String.format("%02X", mac[i]));
+                for (byte b : mac) {
+                    sb.append(String.format("%02X", b));
                 }
             }
-            return sb.toString() + "-" + userName;
+            return sb + "-" + userName;
         } catch (Exception e) {
             e.printStackTrace();
             return null;

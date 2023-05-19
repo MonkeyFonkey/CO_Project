@@ -1,19 +1,17 @@
 package Benchmark;
 
-import java.io.BufferedReader;
+import com.sun.management.OperatingSystemMXBean;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.util.Scanner;
-
-import com.sun.management.OperatingSystemMXBean;
 
 public class CpuInfo {
     private OperatingSystemMXBean osBean;
 
     public CpuInfo() {
         for (com.sun.management.OperatingSystemMXBean bean : ManagementFactory.getPlatformMXBeans(com.sun.management.OperatingSystemMXBean.class)) {
-            if (bean instanceof com.sun.management.OperatingSystemMXBean) {
+            if (bean != null) {
                 osBean = bean;
                 break;
             }
@@ -31,17 +29,13 @@ public class CpuInfo {
         return osBean.getAvailableProcessors();
     }
 
-    public double getSystemLoadAverage() {
-        return osBean.getSystemLoadAverage();
-    }
-
     public double getCpuUsage() {
         return osBean.getProcessCpuLoad();
     }
 
     public String getCpuModel() {
             String osName = System.getProperty("os.name").toLowerCase();
-            String arch = System.getProperty("os.arch").toLowerCase();
+            //String arch = System.getProperty("os.arch").toLowerCase();
             String cpuModelWindows = "Unknown";
 
         if (osName.contains("win")) { // Windows

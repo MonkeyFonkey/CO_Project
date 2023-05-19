@@ -5,18 +5,12 @@ public enum TimeUnit {
 
 
     public static double toTimeUnit(long time,  TimeUnit unit){
-        switch (unit){
-            case Nano:
-                return time;
-            case Micro:
-                return time/1000.0;
-            case Milli:
-                return time/1000000.0;
-            case Sec:
-                return time/1000000000.0;
-            default:
-                return time;
-        }
+        return switch (unit) {
+            case Nano -> time;
+            case Micro -> time / 1000.0;
+            case Milli -> time / 1000000.0;
+            case Sec -> time / 1000000000.0;
+        };
 
     }
 

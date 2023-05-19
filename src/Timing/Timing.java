@@ -1,9 +1,8 @@
 package Timing;
 
 public class Timing implements iTiming{
-    private long elapsedTime = 0;
     private int totalTime;
-    private long end, start, pause, resume;
+    private long end, start;
 
 
     public void start(){

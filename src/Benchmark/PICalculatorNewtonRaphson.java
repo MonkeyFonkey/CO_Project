@@ -5,7 +5,7 @@ import java.math.RoundingMode;
 
 
 public class PICalculatorNewtonRaphson implements iBenchmark{
-    int[] arr;
+
     BigDecimal result;
 
     private int numDigits;
@@ -14,7 +14,7 @@ public class PICalculatorNewtonRaphson implements iBenchmark{
 
     public BigDecimal calculatePi() {
         // initialize variables
-        BigDecimal pi = BigDecimal.ZERO;
+        BigDecimal pi;
         BigDecimal a = BigDecimal.ONE;
         BigDecimal b = BigDecimal.ONE.divide(sqrt(new BigDecimal("2"), numDigits), numDigits, RoundingMode.HALF_UP);
         BigDecimal t = new BigDecimal("0.25");
@@ -55,29 +55,10 @@ public class PICalculatorNewtonRaphson implements iBenchmark{
         result = calculatePi();
     }
 
-    public void run(Object ... params){
-            //Null
-    }
-
     public void initialize(int digits){
         this.numDigits = digits;
     }
 
-    public void clean(){
-
-    }
-
-    public void cancel(){
-
-
-    }
-    public void warmUp(){
-        PICalculatorNewtonRaphson cp = new PICalculatorNewtonRaphson();
-        cp.initialize(30);
-        for(int i = 0; i < 2; i++){
-            cp.run();
-        }
-    }
 
     public String getResult() {
         return "PI number is: " + result;
