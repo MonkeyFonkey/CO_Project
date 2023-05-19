@@ -4,21 +4,19 @@ import Benchmark.Ram.MemoryBandwidthBenchamrk;
 import Benchmark.CpuInfo;
 import Benchmark.PICalculatorNewtonRaphson;
 import Timing.Timing;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.text.DecimalFormat;
-import java.util.Scanner;
 import static Benchmark.NetworkInfo.getPCID;
+import static GUI.GuiMethods.*;
 import static Logging.TimeUnit.*;
 
 public class GUI extends JFrame implements ActionListener {
-    private JLabel digitsLabel;
+
+
+
+    private final JLabel digitsLabel;
     private JTextField digitsForAvgScoreTextField;
     private JLabel digitsForAvgScoreLabel;
     private JTextField digitsTextField;
@@ -29,19 +27,18 @@ public class GUI extends JFrame implements ActionListener {
     private JButton average_score_to_document_button;
     private JLabel cpuUsageLabel;
     private JLabel digitsForCalculateRamLabel;
-    private JTextField digitsForCalculateRamTextField;
+
     private JButton calculateRamButton;
 
     private static final String SCORE_FILE = "scores.txt";
 
     private long score = 0;
 
-    //private OperatingSystemMXBean osBean; // for the number of cores
 
     public GUI() {
-        super("Pi Calculator");
+        super("The Bit Busters");
 
-        // Create and configure GUI components
+
         digitsLabel = new JLabel("Digits of PI to calculate:");
         digitsTextField = new JTextField(10);
         calculateButton = new JButton("Calculate");
@@ -49,74 +46,21 @@ public class GUI extends JFrame implements ActionListener {
         digitsTextField.addActionListener(this);
         digitsTextField.setActionCommand("calculate");
 
-        digitsForCalculateRamLabel =  new JLabel("Length for RAM bench: ");
-        digitsForCalculateRamTextField = new JTextField(10);
+
+
+        digitsForCalculateRamLabel =  new JLabel("RAM BENCHMARK by measuring the BANDWIDTH");
+
+
+
         calculateRamButton = new JButton("Calculate");
-        calculateRamButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MemoryBandwidthBenchamrk mem1 = new MemoryBandwidthBenchamrk();
-                String input = digitsForCalculateRamTextField.getText();
-                int arraySize = 0;
-
-                try {
-                    arraySize = Integer.parseInt(digitsForCalculateRamTextField.getText());
-                } catch (NumberFormatException ex) {
-                    // Display an error message and highlight the text field in red
-                    JOptionPane.showMessageDialog(null, "Please enter a valid integer", "Error", JOptionPane.ERROR_MESSAGE);
-                    digitsForCalculateRamTextField.setBorder(BorderFactory.createLineBorder(Color.RED));
-                    return;
-                }
-
-                // Reset the background color of the text field
-                digitsForCalculateRamTextField.setBorder(BorderFactory.createLineBorder(Color.black));
-
-                // Call the initialize function with the arraySize
-
-                Timing t = new Timing();
-                t.start();
-                mem1.run();
-                long totalTime = t.stop();
-
-
-
-                double SecTime = toTimeUnit(totalTime, Sec);
-
-                // Display the result and the time in a new JFrame
-                JFrame resultFrame = new JFrame("Result");
-                resultFrame.setSize(700, 450);
-
-                JTextArea resultTextArea = new JTextArea(10, 30);
-                resultTextArea.setEditable(false);
-                resultTextArea.append("Time taken: " + SecTime + " seconds\n");
-                resultTextArea.append("Score: " + mem1.getScore() + "\n");
-
-                JScrollPane scrollPane = new JScrollPane(resultTextArea);
-
-                JButton backButton = new JButton("Back");
-                backButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        resultFrame.dispose();
-                    }
-                });
-
-                JPanel buttonPanel = new JPanel();
-                buttonPanel.add(backButton);
-
-                JPanel resultPanel = new JPanel();
-                resultPanel.setLayout(new BorderLayout());
-                resultPanel.add(scrollPane, BorderLayout.CENTER);
-                resultPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-                resultFrame.add(resultPanel);
-                resultFrame.setVisible(true);
-            }
-
-        });
-
-
         showPCConfigurationButton = new JButton("Show CPU Configuration");
+        average_score_to_document_button = new JButton("Add Average CPU Score to Document");
+
+
+        digitsForAvgScoreTextField = new JTextField(10);
+        digitsForAvgScoreLabel = new JLabel("Digits used for Average CPU Score to Document: 1000");
+
+
         showPCConfigurationButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Get CPU information and display in a message dialog
@@ -125,7 +69,7 @@ public class GUI extends JFrame implements ActionListener {
             }
         });
 
-        average_score_to_document_button = new JButton("Add Average CPU Score to Document");
+
         average_score_to_document_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -195,18 +139,92 @@ public class GUI extends JFrame implements ActionListener {
         });
 
 
-        digitsForAvgScoreTextField = new JTextField(10);
-        digitsForAvgScoreLabel = new JLabel("Digits of PI to calculate for average score: 1000");
+        calculateRamButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MemoryBandwidthBenchamrk mem1 = new MemoryBandwidthBenchamrk();
+
+                // Call the initialize function with the arraySize
+                Timing t = new Timing();
+                t.start();
+                mem1.run();
+                long totalTime = t.stop();
+
+
+
+                double SecTime = toTimeUnit(totalTime, Sec);
+
+                // Display the result and the time in a new JFrame
+                JFrame resultFrame = new JFrame("Result");
+                resultFrame.setSize(400, 250);
+
+                JTextArea resultTextArea = new JTextArea(10, 30);
+                resultTextArea.setEditable(false);
+                resultTextArea.append("Score: " + mem1.getScore() + "\n");
+
+                JScrollPane scrollPane = new JScrollPane(resultTextArea);
+
+                JButton backButton = new JButton("Back");
+                backButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        resultFrame.dispose();
+                    }
+                });
+
+                JPanel buttonPanel = new JPanel();
+                buttonPanel.add(backButton);
+
+                JPanel resultPanel = new JPanel();
+                resultPanel.setLayout(new BorderLayout());
+                resultPanel.add(scrollPane, BorderLayout.CENTER);
+                resultPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+                resultFrame.add(resultPanel);
+                resultFrame.setVisible(true);
+            }
+
+        });
+
+
+
+        // Add components to content pane
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+
+
+
+        //PANELS FOR: CPU BENCHMARK, RAM, PC INFORMATION
+
+        JPanel goToCPUBenchPanel = new JPanel(new GridBagLayout());
+        JButton goToCPUButton = new JButton("CPU BENCHMARK");
+
+        goToCPUButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                // Remove the additionalPanel if it already exists
+                if (goToCPUBenchPanel != null) {
+                    panel.remove(goToCPUBenchPanel);
+                }
+
+                // Add the additionalPanel to the panel
+                panel.add(goToCPUBenchPanel, constraints);
+
+                // Revalidate and repaint the main frame to update the layout
+                revalidate();
+                repaint();
+
+            }
+        });
+
+
 
         //adding a cpu usage label
         cpuUsageLabel = new JLabel("CPU Usage: ");
         JPanel cpuPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         cpuPanel.add(cpuUsageLabel);
 
-        // Add components to content pane
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
-  
 
         //Adding digitsLabel
         constraints.gridx = 0;
@@ -239,7 +257,6 @@ public class GUI extends JFrame implements ActionListener {
         panel.add(showPCConfigurationButton, constraints);
 
 
-
         //added CPU USAGE LABEL
         constraints.gridx = 0;
         constraints.gridy = 7;
@@ -252,26 +269,25 @@ public class GUI extends JFrame implements ActionListener {
         panel.add(digitsForAvgScoreLabel, constraints);
 
 
-
-
         //Button to calculate average score and add it to the document
         constraints.gridx = 0;
         constraints.gridy = 6;
         constraints.gridwidth = 2;
         panel.add(average_score_to_document_button, constraints);
 
+
+
         constraints.gridx = 0;
         constraints.gridy = 8;
-        constraints.anchor = GridBagConstraints.WEST;
+        constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new Insets(5, 5, 5, 5);
         panel.add(digitsForCalculateRamLabel, constraints);
 
-        constraints.gridx = 1;
-        panel.add(digitsForCalculateRamTextField, constraints);
 
         constraints.gridx = 0;
         constraints.gridy = 9;
         constraints.gridwidth = 2;
+        constraints.anchor = GridBagConstraints.CENTER;
         panel.add(calculateRamButton, constraints);
 
         digitsForAvgScoreTextField = new JTextField("1000", 10);
@@ -286,6 +302,12 @@ public class GUI extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
 
+
+
+
+
+
+
         // Start a timer to update the CPU usage label every 1 second
         Timer timer = new Timer(1000, new ActionListener() {
             @Override
@@ -297,6 +319,9 @@ public class GUI extends JFrame implements ActionListener {
         });
         timer.start();
     }
+
+
+
 
     // Get CPU usage as a percentage
     public double getCpuUsage() {
@@ -313,104 +338,81 @@ public class GUI extends JFrame implements ActionListener {
     }
 
 
-    //Searches if there is not already a PC with the same PCID
-    private static boolean isPCIDUnique(String pcID) throws Exception {
-        try (Scanner scanner = new Scanner(new File("src/data/scores.txt"))) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                if (line.trim().startsWith(pcID.trim() + ",")) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-
-    //add Score to File
-    private static void saveScoreToFile(String scoreRecord) throws Exception {
-        Files.write(Paths.get("src/data/scores.txt"), (scoreRecord + "\n").getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-    }
-
-
-
-
     //action when pressing the "calculate" button
     public void actionPerformed(ActionEvent e) {
-            // Get the number of digits to calculate
-            int numDigits = 0;
-            try {
-                numDigits = Integer.parseInt(digitsTextField.getText());
-            } catch (NumberFormatException ex) {
-                // Display an error message and highlight the text field in red
-                JOptionPane.showMessageDialog(this, "Please enter a valid integer", "Error", JOptionPane.ERROR_MESSAGE);
-                digitsTextField.setBorder(BorderFactory.createLineBorder(Color.RED));
-                return;
+        // Get the number of digits to calculate
+        int numDigits = 0;
+        try {
+            numDigits = Integer.parseInt(digitsTextField.getText());
+        } catch (NumberFormatException ex) {
+            // Display an error message and highlight the text field in red
+            JOptionPane.showMessageDialog(this, "Please enter a valid integer", "Error", JOptionPane.ERROR_MESSAGE);
+            digitsTextField.setBorder(BorderFactory.createLineBorder(Color.RED));
+            return;
+        }
+
+        // Reset the background color of the text field
+        digitsTextField.setBorder(BorderFactory.createLineBorder(Color.black));
+
+        Timing t = new Timing();
+        PICalculatorNewtonRaphson pi = new PICalculatorNewtonRaphson();
+        pi.initialize(numDigits);
+
+
+
+        // Calculate PI using the Newton-Raphson formula
+
+        t.start();
+        pi.run();
+        long totalTime = t.stop();
+
+        double secondsTotalTime =  toTimeUnit(totalTime, Sec);
+
+        //Calculating the score:
+        int numCores = Runtime.getRuntime().availableProcessors();
+        score = (long)(((pi.getNumDigits()/secondsTotalTime) * 10)/numCores) ;//number of digits over the time it took to run the program multipled by 1000 then divided by
+        //the number of cores!
+
+
+
+
+
+        //Display the result and the time it took in a new JFrame
+
+        JFrame resultFrame = new JFrame("Result");
+        resultFrame.setSize(700, 450);
+        JTextArea resultTextArea = new JTextArea(10, 30);
+        resultTextArea.setEditable(false);
+        resultTextArea.append(String.format("Pi number with %d digits is:\n", numDigits));
+        String piResult = pi.getResult();
+        int lineLength = 80;
+        for (int i = 0; i < piResult.length(); i += lineLength) {
+            int endIndex = Math.min(i + lineLength, piResult.length());
+            resultTextArea.append(String.format("%s\n", piResult.substring(i, endIndex)));
+        }
+        resultTextArea.append(String.format("Time taken: %s milliseconds\n", toTimeUnit(totalTime, Milli)));
+        resultTextArea.append(String.format("The score is: %d\n\n", score));
+
+
+        //Adding the resultTextArea to the new frame
+        resultFrame.add(new JScrollPane(resultTextArea));
+        resultFrame.setVisible(true);
+
+
+        //Adding a back button to the result frame
+        JButton backButton = new JButton("Back");
+
+        //creating the function for the backButton
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                resultFrame.dispose();
             }
+        });
 
-            // Reset the background color of the text field
-            digitsTextField.setBorder(BorderFactory.createLineBorder(Color.black));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.add(backButton);
+        resultFrame.add(buttonPanel, BorderLayout.SOUTH);
 
-            Timing t = new Timing();
-            PICalculatorNewtonRaphson pi = new PICalculatorNewtonRaphson();
-            pi.initialize(numDigits);
-
-
-
-            // Calculate PI using the Newton-Raphson formula
-
-            t.start();
-            pi.run();
-            long totalTime = t.stop();
-
-            double secondsTotalTime =  toTimeUnit(totalTime, Sec);
-
-            //Calculating the score:
-            int numCores = Runtime.getRuntime().availableProcessors();
-            score = (long)(((pi.getNumDigits()/secondsTotalTime) * 10)/numCores) ;//number of digits over the time it took to run the program multipled by 1000 then divided by
-                                                                                            //the number of cores!
-
-
-
-
-
-            //Display the result and the time it took in a new JFrame
-
-            JFrame resultFrame = new JFrame("Result");
-            resultFrame.setSize(700, 450);
-            JTextArea resultTextArea = new JTextArea(10, 30);
-            resultTextArea.setEditable(false);
-            resultTextArea.append(String.format("Pi number with %d digits is:\n", numDigits));
-            String piResult = pi.getResult();
-            int lineLength = 80;
-            for (int i = 0; i < piResult.length(); i += lineLength) {
-                int endIndex = Math.min(i + lineLength, piResult.length());
-                resultTextArea.append(String.format("%s\n", piResult.substring(i, endIndex)));
-            }
-            resultTextArea.append(String.format("Time taken: %s milliseconds\n", toTimeUnit(totalTime, Milli)));
-            resultTextArea.append(String.format("The score is: %d\n\n", score));
-
-
-            //Adding the resultTextArea to the new frame
-            resultFrame.add(new JScrollPane(resultTextArea));
-            resultFrame.setVisible(true);
-
-
-            //Adding a back button to the result frame
-            JButton backButton = new JButton("Back");
-
-            //creating the function for the backButton
-            backButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    resultFrame.dispose();
-                }
-            });
-
-            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-            buttonPanel.add(backButton);
-            resultFrame.add(buttonPanel, BorderLayout.SOUTH);
-
-            resultFrame.setVisible(true);
+        resultFrame.setVisible(true);
     }
-
 }
